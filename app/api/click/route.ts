@@ -19,12 +19,6 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
     }
 
   } catch (error: any) {
-    return new Response(
-      JSON.stringify({
-        message: 'Proxy error',
-        detail: error.response?.data || error.message,
-      }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return res.status(500).json({ error: 'server error!' });
   }
 }
