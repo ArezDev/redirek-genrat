@@ -107,11 +107,11 @@ export default function Link() {
         const finalUrl = matchedNetwork.url
           .replaceAll('{user}', sub)
           .replaceAll('{leads}', leadsId);
-          console.log(finalUrl)
+          //console.log(finalUrl)
 
         // Redirect
         setStatusText('Redirecting to destination...');
-        //setTimeout(() => router.push(finalUrl), 1000);
+        setTimeout(() => router.push(finalUrl), 1000);
 
       } catch (err) {
         console.error(err);
