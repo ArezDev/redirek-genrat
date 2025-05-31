@@ -95,13 +95,13 @@ export default function Link() {
         setNetworkData(JSON.stringify(matchedNetwork));
         setStatusText('Creating click record...');
 
-        const create_clicks = await axios.get(`https://realtime.balanesohib.eu.org/api/c?sub=${sub}&network=${networkCode}`);
+        const create_clicks = await axios.get(`/api/click?sub=${sub}&network=${networkCode}`);
         if (create_clicks.status !== 200) {
           setStatusText('Failed to create click record.');
           return;
         }
 
-        const leadsId = create_clicks.data.data;
+        const leadsId = create_clicks?.data?.clickId;
 
         // Replace placeholders
         const finalUrl = matchedNetwork.url
