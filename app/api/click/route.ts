@@ -1,24 +1,27 @@
 import axios from 'axios';
-import { NextApiResponse, NextApiRequest } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
-  const { sub, network } = req.query;
+export async function POST(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const sub = searchParams.get('sub');
+  const network = searchParams.get('network');
 
   if (!sub || !network) {
-    res.status(401).json({ error: "Missing variable.." });
+    return NextResponse.json({ error: "Missing variable.." }, { status: 400 });
   }
 
   try {
-
     const getClick = await axios.get('https://realtime.balanesohib.eu.org/api/c', {
-        params:{ sub: sub, network: network }
+      params: { sub, network }
     });
 
-    if(getClick.status === 200) {
-        return res.status(200).json({ clickId: getClick?.data?.data });
+    if (getClick.status === 200) {
+      return NextResponse.json({ clickId: getClick.data?.data }, { status: 200 });
+    } else {
+      return NextResponse.json({ error: "Failed to fetch click data" }, { status: getClick.status });
     }
-
   } catch (error: any) {
-    return res.status(500).json({ error: 'server error!' });
+    console.error("Click fetch failed:", error);
+    return NextResponse.json({ error: 'Server error!' }, { status: 500 });
   }
 }
