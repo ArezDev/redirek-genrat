@@ -93,7 +93,8 @@ export default function Link() {
         //console.log(matchedNetwork)
 
         setNetworkData(JSON.stringify(matchedNetwork));
-        setStatusText('Creating click record...');
+        //setStatusText('Creating click record...');
+        setStatusText('Please wait...');
 
         const create_clicks = await axios.get(`/api/redirect/click`,{
           params:{
@@ -116,17 +117,19 @@ export default function Link() {
 
         // Redirect
         setStatusText('Redirecting to destination...');
-        setTimeout(() => router.push(finalUrl), 1000);
-
+        //setTimeout(() => router.push(finalUrl), 1000);
+        //Langsung!
+        router.push(finalUrl);
       } catch (err) {
         console.error(err);
         setStatusText('Error during processing.');
       }
     };
+    processRedirect;
 
-    const timeout = setTimeout(processRedirect, 1000);
+    //const timeout = setTimeout(processRedirect, 1000);
 
-    return () => clearTimeout(timeout);
+    //return () => clearTimeout(timeout);
   }, [pathname, router]);
 
   return (
