@@ -95,7 +95,7 @@ export default function Link() {
         setNetworkData(JSON.stringify(matchedNetwork));
         setStatusText('Creating click record...');
 
-        const create_clicks = await axios.get(`/api/click`,{
+        const create_clicks = await axios.get(`/api/redirect/click`,{
           params:{
             sub: sub,
             network: networkCode
