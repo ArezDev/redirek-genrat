@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { db } from "@/utils/firebase";
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from "firebase/firestore";
+import { db } from "@/utils/firebaseAdmin";
 import bcrypt from "bcryptjs";
+import { FieldValue } from "firebase-admin/firestore";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
@@ -13,19 +13,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const q = query(collection(db, "users"), where("username", "==", username));
-    const snapshot = await getDocs(q);
+    const snapshot = await db.collection("users").where("username", "==", username).get();
     if (!snapshot.empty) {
       return res.status(400).json({ message: "Username sudah digunakan" });
     }
 
     const hashed = await bcrypt.hash(password, 10);
 
-    await addDoc(collection(db, "users"), {
+    await db.collection("users").add({
       username,
       password: hashed,
       role: "member",
-      createdAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
 
     return res.status(201).json({ message: "User berhasil dibuat" });

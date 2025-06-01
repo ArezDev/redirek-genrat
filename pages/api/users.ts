@@ -1,6 +1,6 @@
 // pages/api/users.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getUsersByRole } from "@/utils/firebase";
+import { getUsersByRole } from "@/utils/firebaseAdmin";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   

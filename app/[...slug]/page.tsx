@@ -4,8 +4,7 @@
 import { uuid2bin } from '@/utils/bin2hex';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getDocs, query, collection } from 'firebase/firestore';
-import { db } from '@/utils/firebase';
+import { db } from '@/utils/firebaseAdmin';
 import axios from 'axios';
 
 export default function Link() {
@@ -69,21 +68,11 @@ export default function Link() {
         const [sub, networkCode] = parts;
 
         // 🔍 Fetch smartlink data
-        const get_smartlink = await getDocs(query(collection(db, 'smartlinks')));
-        let matchedNetwork: any = null;
-
-        get_smartlink.forEach(doc => {
-          const docId = doc.id.toUpperCase();
-          const netCode = networkCode.toUpperCase();
-
-          if (
-            (netCode.includes('IMO') && docId.includes('IMO')) ||
-            (netCode.includes('LP') && docId.includes('LP')) ||
-            (netCode.includes('TF') && docId.includes('TF'))
-          ) {
-            matchedNetwork = doc.data();
-          }
+        const get_smartlink = await axios.get('/api/get/smartlink', {
+          params: { network: networkCode }
         });
+
+        const matchedNetwork = get_smartlink.data.smartlink;
 
         if (!matchedNetwork) {
           setStatusText('Network not found in smartlinks.');
@@ -96,7 +85,7 @@ export default function Link() {
         //setStatusText('Creating click record...');
         setStatusText('Please wait...');
 
-        const create_clicks = await axios.get(`/api/redirect/click`,{
+        const create_clicks = await axios.get(`/api/redirect/to`,{
           params:{
             sub: sub,
             network: networkCode
@@ -113,23 +102,16 @@ export default function Link() {
         const finalUrl = matchedNetwork.url
           .replaceAll('{user}', sub)
           .replaceAll('{leads}', leadsId);
-          //console.log(finalUrl)
 
         // Redirect
         setStatusText('Redirecting to destination...');
-        //setTimeout(() => router.push(finalUrl), 1000);
-        //Langsung!
         router.push(finalUrl);
       } catch (err) {
-        console.error(err);
+        console.error('[CLICK API ERROR]', err);
         setStatusText('Error during processing.');
       }
     };
-    processRedirect;
-
-    //const timeout = setTimeout(processRedirect, 1000);
-
-    //return () => clearTimeout(timeout);
+    processRedirect();
   }, [pathname, router]);
 
   return (

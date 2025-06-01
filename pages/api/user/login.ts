@@ -1,6 +1,6 @@
 // pages/api/login.ts
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUserByUsername } from "@/utils/firebase"; // asumsi ada fungsi ambil user
+import { getUserByUsername } from "@/utils/firebaseAdmin"; // asumsi ada fungsi ambil user
 import { compare } from "bcryptjs";
 import jwt from "jsonwebtoken";
 
