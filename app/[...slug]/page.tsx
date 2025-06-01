@@ -90,12 +90,17 @@ export default function Link() {
           return;
         }
 
-        console.log(matchedNetwork)
+        //console.log(matchedNetwork)
 
         setNetworkData(JSON.stringify(matchedNetwork));
         setStatusText('Creating click record...');
 
-        const create_clicks = await axios.post(`/api/click?sub=${sub}&network=${networkCode}`);
+        const create_clicks = await axios.get(`/api/click`,{
+          params:{
+            sub: sub,
+            network: networkCode
+          }
+        });
         if (create_clicks.status !== 200) {
           setStatusText('Failed to create click record.');
           return;
