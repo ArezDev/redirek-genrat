@@ -180,7 +180,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     return res.status(200).json({
-      data: encoded,
+      clickId: encoded,
       status: 'OK',
       message: 'Click successfully tracked!',
     });
