@@ -1,6 +1,5 @@
 // lib/auth.ts
 import { db } from "./firebaseAdmin";
-import { collection, query, where, getDocs } from "firebase/firestore";
 import bcrypt from "bcryptjs";
 
 export const verifyLogin = async (username: string, password: string) => {
