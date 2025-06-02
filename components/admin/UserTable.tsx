@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { PencilIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import axios from "axios";
-import { Edit2, Edit2Icon, Edit3Icon, EditIcon } from "lucide-react";
+import { EditIcon } from "lucide-react";
 
 const MySwal = withReactContent(Swal);
 

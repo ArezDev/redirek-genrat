@@ -2,8 +2,6 @@
 "use client";
 import { LogOut, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "@/utils/firebase";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
