@@ -58,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   const sub = Array.isArray(req.query.sub) ? req.query.sub[0] : (req.query.sub ?? 'unknown');
-  const network = Array.isArray(req.query.network) ? req.query.network[1] : (req.query.network ?? 'unknown');
+  const network = Array.isArray(req.query.network) ? req.query.network[0] : (req.query.network ?? 'unknown');
   const userId = sub;
 
   if (!req.query.sub || !req.query.network) {
