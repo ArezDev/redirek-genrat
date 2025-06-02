@@ -45,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const result = await axios.get(`https://ipwhois.pro/${ip}`, {
         params: {
-          key: 'rmpJxy6jV0iWmWZu'
+          key: '4OehYgGBlw8CpI5x'
         }
       });
       if (result && result.data) {
