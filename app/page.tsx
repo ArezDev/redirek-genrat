@@ -2398,8 +2398,8 @@ export default function Dashboard() {
       let selectedDomain = shortURL === "0"
       ? domainList[Math.floor(Math.random() * domainList.length)]
       : shortURL;
-      let subDomain = domainList[Math.floor(Math.random() * randomSub.length)];
-      let subDomain2 = domainList[Math.floor(Math.random() * randomSub.length)];
+      let subDomain = randomSub[Math.floor(Math.random() * randomSub.length)];
+      let subDomain2 = randomSub[Math.floor(Math.random() * randomSub.length)];
       if (modeLink === "hex") {
         const linkStr = await createLink();
         link = `${debug}https://${subDomain+subDomain2}${selectedDomain}/${strToHex(linkStr)}`;
