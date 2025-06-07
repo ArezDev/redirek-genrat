@@ -19,7 +19,7 @@ export default function LoginPage() {
         allowEscapeKey: false,
         timerProgressBar: true,
         theme: 'auto',
-        timer: 1000,
+        timer: 2000,
         didOpen: () => {
           Swal.showLoading();
         },
@@ -35,7 +35,10 @@ export default function LoginPage() {
             showConfirmButton: false,
             theme: 'auto'
           }).then(() => {
-            router.push("/");
+            setTimeout(() => {
+              console.log('sukses login');
+              router.push("/");
+            }, 2000);
           });
         }
     } catch (err: any) {
