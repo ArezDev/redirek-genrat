@@ -23,5 +23,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Set HTTP-only cookie
   res.setHeader("Set-Cookie", `session_member=${token}; HttpOnly; Path=/; Max-Age=86400; SameSite=Lax; Secure`);
 
-  return res.status(200).json({ token });
+  return res.status(200).json({ success: true, token });
 }

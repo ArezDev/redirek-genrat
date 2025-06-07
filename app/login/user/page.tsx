@@ -26,19 +26,18 @@ export default function LoginPage() {
       });
     try {
     const res = await axios.post("/api/user/login/", { username, password });
-        if (res?.status === 200) {
-          Swal.close();
+        if (res?.data?.success === true) {
+          Swal.close(); // Tutup swal loading setelah response
           Swal.fire({
-            icon: "success",
-            title: "Login Berhasil",
-            text: "Selamat datang di dashboard.",
+            icon: 'success',
+            title: `Welcome ${username} !`,
+            text: '',
             showConfirmButton: false,
-            theme: 'auto'
+            timer: 750,
+            theme: 'auto',
+          }).then(() => {
+            router.push("/");
           });
-          setTimeout(() => {
-              console.log('sukses login');
-              router.push("/");
-          }, 2000);
         }
     } catch (err: any) {
         Swal.fire({
