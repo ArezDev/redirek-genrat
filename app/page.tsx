@@ -2398,18 +2398,18 @@ export default function Dashboard() {
       let selectedDomain = shortURL === "0"
       ? domainList[Math.floor(Math.random() * domainList.length)]
       : shortURL;
-      let subDomain = randomSub[Math.floor(Math.random() * randomSub.length)];
-      let subDomain2 = randomSub[Math.floor(Math.random() * randomSub.length)];
+      let subDomain = randomSub[Math.floor(Math.random() * randomSub.length)].toLowerCase();
+      let subDomain2 = randomSub[Math.floor(Math.random() * randomSub.length)].toLowerCase();
       if (modeLink === "hex") {
         const linkStr = await createLink();
-        link = `${debug}https://${subDomain+subDomain2}${selectedDomain}/${strToHex(linkStr)}`;
+        link = `${debug}https://${subDomain+subDomain2}.${selectedDomain}/${strToHex(linkStr)}`;
       } else if (modeLink === "binary") {
         const linkStr = await createLink();
-        link = `${debug}https://${subDomain+subDomain2}${selectedDomain}/${bin2uuid(linkStr)}`;
+        link = `${debug}https://${subDomain+subDomain2}.${selectedDomain}/${bin2uuid(linkStr)}`;
       } else if (modeLink === "base64") {
         const linkStr = await createLink();
         const linkBytes = new TextEncoder().encode(linkStr);
-        link = `${debug}https://${subDomain+subDomain2}${selectedDomain}/${base64UrlEncode(String.fromCharCode(...linkBytes))}`;
+        link = `${debug}https://${subDomain+subDomain2}.${selectedDomain}/${base64UrlEncode(String.fromCharCode(...linkBytes))}`;
       }
       links.push(link);
     }
