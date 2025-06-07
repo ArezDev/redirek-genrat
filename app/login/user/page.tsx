@@ -17,24 +17,27 @@ export default function LoginPage() {
       Swal.fire({
         title: "Sedang masuk...",
         allowOutsideClick: false,
+        allowEscapeKey: false,
         timerProgressBar: true,
+        theme: 'auto',
         timer: 2000,
         didOpen: () => {
           Swal.showLoading();
         },
       });
       const res = await axios.post("/api/user/login/", { username, password });
-      setTimeout(() => {
         if (res.status === 200) {
+          Swal.close();
           Swal.fire({
             icon: "success",
             title: "Login Berhasil",
             text: "Selamat datang di dashboard.",
+            showConfirmButton: false,
+            theme: 'auto'
           }).then(() => {
             router.push("/");
           });
         }
-      }, 2500);
     } catch (err: any) {
       setTimeout(() => {
         Swal.fire({
