@@ -34,12 +34,11 @@ export default function LoginPage() {
             text: "Selamat datang di dashboard.",
             showConfirmButton: false,
             theme: 'auto'
-          }).then(() => {
-            setTimeout(() => {
+          });
+          setTimeout(() => {
               console.log('sukses login');
               router.push("/");
-            }, 2000);
-          });
+          }, 2000);
         }
     } catch (err: any) {
         Swal.fire({
