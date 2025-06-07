@@ -1,17 +1,15 @@
-//HALAMAN REDIREK LINK
 'use client';
 
 import { uuid2bin } from '@/utils/bin2hex';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { db } from '@/utils/firebaseAdmin';
 import axios from 'axios';
 
 export default function Link() {
   const router = useRouter();
   const pathname = usePathname();
   const [statusText, setStatusText] = useState('Loading...');
-  const [networkData, setNetworkData] = useState<string | null>(null);
+  //const [networkData, setNetworkData] = useState<string | null>(null);
 
   useEffect(() => {
     if (!pathname) return;
@@ -81,7 +79,7 @@ export default function Link() {
 
         //console.log(matchedNetwork)
 
-        setNetworkData(JSON.stringify(matchedNetwork));
+        //setNetworkData(JSON.stringify(matchedNetwork));
         //setStatusText('Creating click record...');
         setStatusText('Please wait...');
 
@@ -123,11 +121,11 @@ export default function Link() {
         <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
           {statusText}
         </h1>
-        {networkData && (
+        {/* {networkData && (
           <p className="text-xs mt-2 text-gray-400 dark:text-gray-500">
             Network: <code>{networkData}</code>
           </p>
-        )}
+        )} */}
         <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
           Redirecting to destination shortly...
         </p>

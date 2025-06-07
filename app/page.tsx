@@ -17,7 +17,7 @@ export default function Dashboard() {
   const [network, setNetwork] = useState("IMO");
   const [debug, setDebug] = useState("");
   const [modeLink, setModeLink] = useState("hex");
-  const [shortURL, setShortURL] = useState("");
+  const [shortURL, setShortURL] = useState("0");
   const [result, setResult] = useState("");
   const [resultShort, setResultShort] = useState("");
   const [darkMode, setDarkMode] = useState(false);
@@ -165,19 +165,30 @@ export default function Dashboard() {
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     const links: string[] = [];
+    const domainList = [
+      "facebooke.cam",
+      "friendsfb.pro",
+      "fwbstars.com",
+      "nkmteam.com",
+      "setboy.live",
+      "smartvids.live",
+    ];
 
     for (let i = 0; i < 1000; i++) {
       let link = "";
+      let selectedDomain = shortURL === "0"
+      ? domainList[Math.floor(Math.random() * domainList.length)]
+      : shortURL;
       if (modeLink === "hex") {
         const linkStr = await createLink();
-        link = `${debug}https://${shortURL}/${strToHex(linkStr)}`;
+        link = `${debug}https://${selectedDomain}/${strToHex(linkStr)}`;
       } else if (modeLink === "binary") {
         const linkStr = await createLink();
-        link = `${debug}https://${shortURL}/${bin2uuid(linkStr)}`;
+        link = `${debug}https://${selectedDomain}/${bin2uuid(linkStr)}`;
       } else if (modeLink === "base64") {
         const linkStr = await createLink();
         const linkBytes = new TextEncoder().encode(linkStr);
-        link = `${debug}https://${shortURL}/${base64UrlEncode(String.fromCharCode(...linkBytes))}`;
+        link = `${debug}https://${selectedDomain}/${base64UrlEncode(String.fromCharCode(...linkBytes))}`;
       }
       links.push(link);
     }
@@ -340,6 +351,11 @@ export default function Dashboard() {
             >
             <option value="0">{'{RANDOM GLOBAL DOMAIN}'}</option>
             <option value="facebooke.cam">facebooke.cam</option>
+            <option value="friendsfb.pro">friendsfb.pro</option>
+            <option value="fwbstars.com">fwbstars.com</option>
+            <option value="nkmteam.com">nkmteam.com</option>
+            <option value="setboy.live">setboy.live</option>
+            <option value="smartvids.live">smartvids.live</option>
             </select>
         </div>
 
