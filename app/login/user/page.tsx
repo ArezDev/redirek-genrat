@@ -13,20 +13,20 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     setError("");
-    try {
       Swal.fire({
         title: "Sedang masuk...",
         allowOutsideClick: false,
         allowEscapeKey: false,
         timerProgressBar: true,
         theme: 'auto',
-        timer: 2000,
+        timer: 1000,
         didOpen: () => {
           Swal.showLoading();
         },
       });
-      const res = await axios.post("/api/user/login/", { username, password });
-        if (res.status === 200) {
+    try {
+    const res = await axios.post("/api/user/login/", { username, password });
+        if (res?.status === 200) {
           Swal.close();
           Swal.fire({
             icon: "success",
@@ -39,7 +39,6 @@ export default function LoginPage() {
           });
         }
     } catch (err: any) {
-      setTimeout(() => {
         Swal.fire({
           icon: "error",
           title: "Login Gagal",
@@ -47,7 +46,6 @@ export default function LoginPage() {
         }).then(() => {
           setError(err.response?.data?.message || "Login gagal");
         });
-      }, 2500);
     }
   };
 
