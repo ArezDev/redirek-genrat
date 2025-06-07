@@ -370,8 +370,8 @@ export default function Dashboard() {
             className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
             <option value="hex">hex</option>
-            <option value="binary">binary</option>
-            <option value="base64">base64</option>
+            <option disabled value="binary">binary</option>
+            <option disabled value="base64">base64</option>
           </select>
         </div>
 
