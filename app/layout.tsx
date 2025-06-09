@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Generate Link -by ZDEV",
+  title: "Generate Link - BALANESOHIB",
   description: "Powered by ZDEV",
 };
 

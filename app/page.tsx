@@ -6,6 +6,7 @@ import { bin2uuid } from "@/utils/bin2hex";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { closeSwal, showLoadingSwal } from "@/components/admin/base/Loading";
 
 type DecodedToken = {
   username: string;
@@ -16,6 +17,7 @@ type DecodedToken = {
 export default function Dashboard() {
   const [network, setNetwork] = useState("IMO");
   const [debug, setDebug] = useState("");
+  const [keyBranchIO, setKeyBranchIO] = useState("");
   const [modeLink, setModeLink] = useState("hex");
   const [shortURL, setShortURL] = useState("0");
   const [result, setResult] = useState("");
@@ -2421,32 +2423,97 @@ export default function Dashboard() {
       icon: "success",
       title: "Links Generated",
       text: "Successfully generated 1000 links.",
+      showConfirmButton: false,
+      timer: 750,
     });
   };
 
   const shortLink = async () => {
     setIsLoadingShort(true);
-
+    showLoadingSwal('Shortening...');
     try {
-      const { data } = await axios.post("/api/short", {
-        url: `${encodeURIComponent(`${debug}https://localhost:3000/${bin2uuid(await createLink())}`)}`,
-        opt: "0", // atau sesuai kebutuhan
-      });
+      if (shortURL === '0') {
 
-      Swal.fire({
-        icon: "success",
-        title: "Shortlink Created",
-        text: data.shorturl || "Berhasil",
-      });
+        // Helper untuk acak 3 angka
+        const acak_3_angka = () => Math.floor(100 + Math.random() * 900).toString();
+
+        //random Names
+        const names = ["Anna","Emma","Elizabeth","Minnie","Margaret","Ida","Alice","Bertha","Sarah","Annie","Clara","Ella","Florence","Cora","Martha","Laura","Nellie","Grace","Carrie","Maude","Mabel","Bessie","Jennie","Gertrude","Julia","Hattie","Edith","Mattie","Rose","Catherine","Lillian","Ada","Lillie","Helen","Jessie","Louise","Ethel","Lula","Myrtle","Eva","Frances","Lena","Lucy","Edna","Maggie","Pearl","Daisy","Fannie","Josephine","Dora","Rosa","Katherine","Agnes","Marie","Nora","May","Mamie","Blanche","Stella","Ellen","Nancy","Effie","Sallie","Nettie","Della","Lizzie","Flora","Susie","Maud","Mae","Etta","Harriet","Sadie","Caroline","Katie","Lydia","Elsie","Kate","Susan","Mollie","Alma","Addie","Georgia","Eliza","Lulu","Nannie","Lottie","Amanda","Belle","Charlotte","Rebecca","Ruth","Viola","Olive","Amelia","Hannah","Jane","Virginia","Emily","Matilda","Irene","Kathryn","Esther","Willie","Henrietta","Ollie","Amy","Rachel","Sara","Estella","Theresa","Augusta","Ora","Pauline","Josie","Lola","Sophia","Leona","Anne","Mildred","Ann","Beulah","Callie","Lou","Delia","Eleanor","Barbara","Iva","Louisa","Maria","Mayme","Evelyn","Estelle","Nina","Betty","Marion","Bettie","Dorothy","Luella","Inez","Lela","Rosie","Allie","Millie","Janie","Cornelia","Victoria","Ruby","Winifred","Alta","Celia","Christine","Beatrice","Birdie","Harriett","Mable","Myra","Sophie","Tillie","Isabel","Sylvia","Carolyn","Isabelle","Leila","Sally","Ina","Essie","Bertie","Nell","Alberta","Katharine","Lora","Rena","Mina","Rhoda","Mathilda","Abbie","Eula","Dollie","Hettie","Eunice","Fanny","Ola","Lenora","Adelaide","Christina","Lelia","Nelle","Sue","Johanna","Lilly","Lucinda","Minerva","Lettie","Roxie","Cynthia","Helena","Hilda","Hulda","Bernice","Genevieve","Jean","Cordelia","Marian","Francis","Jeanette","Adeline","Gussie","Leah","Lois","Lura","Mittie","Hallie","Isabella","Olga","Phoebe","Teresa","Hester","Lida","Lina","Winnie","Claudia","Marguerite","Vera","Cecelia","Bess","Emilie","John","Rosetta","Verna","Myrtie","Cecilia","Elva","Olivia","Ophelia","Georgie","Elnora","Violet","Adele","Lily","Linnie","Loretta","Madge","Polly","Virgie","Eugenia","Lucile","Lucille","Mabelle","Rosalie","Kittie","Meta","Angie","Dessie","Georgiana","Lila","Regina","Selma","Wilhelmina","Bridget","Lilla","Malinda","Vina","Freda","Gertie","Jeannette","Louella","Mandy","Roberta","Cassie","Corinne","Ivy","Melissa","Lyda","Naomi","Norma","Bell","Margie","Nona","Zella","Dovie","Elvira","Erma","Irma","Leota","William","Artie","Blanch","Charity","Lorena","Lucretia","Orpha","Alvina","Annette","Catharine","Elma","Geneva","Janet","Lee","Leora","Lona","Miriam","Zora","Linda","Octavia","Sudie","Zula","Adella","Alpha","Frieda","George","Joanna","Leonora","Priscilla","Tennie","Angeline","Docia","Ettie","Flossie","Hanna","Letha","Minta","Retta","Rosella","Adah","Berta","Elisabeth","Elise","Goldie","Leola","Margret","Adaline","Floy","Idella","Juanita","Lenna","Lucie","Missouri","Nola","Zoe","Eda","Isabell","James","Julie","Letitia","Madeline","Malissa","Mariah","Pattie","Vivian","Almeda","Aurelia","Claire","Dolly","Hazel","Jannie","Kathleen","Kathrine","Lavinia","Marietta","Melvina","Ona","Pinkie","Samantha","Susanna","Chloe","Donnie","Elsa","Gladys","Matie","Pearle","Vesta","Vinnie","Antoinette","Clementine","Edythe","Harriette","Libbie","Lilian","Lue","Lutie","Magdalena","Meda","Rita","Tena","Zelma","Adelia","Annetta","Antonia","Dona","Elizebeth","Georgianna","Gracie","Iona","Lessie","Leta","Liza","Mertie","Molly","Neva","Oma","Alida","Alva","Cecile","Cleo","Donna","Ellie","Ernestine","Evie","Frankie","Helene","Minna","Myrta","Prudence","Queen","Rilla","Savannah","Tessie","Tina","Agatha","America","Anita","Arminta","Dorothea","Ira","Luvenia","Marjorie","Maybelle","Mellie","Nan","Pearlie","Sidney","Velma","Clare","Constance","Dixie","Ila","Iola","Jimmie","Louvenia","Lucia","Ludie","Luna","Metta","Patsy","Phebe","Sophronia","Adda","Avis","Betsy","Bonnie","Cecil","Cordie","Emmaline","Ethelyn","Hortense","June","Louie","Lovie","Marcella","Melinda","Mona","Odessa","Veronica","Aimee","Annabel","Ava","Bella","Carolina","Cathrine","Christena","Clyde","Dena","Dolores","Eleanore","Elmira","Fay","Frank","Jenny","Kizzie","Lonnie","Loula","Magdalene","Mettie","Mintie","Peggy","Reba","Serena","Vida","Zada","Abigail","Celestine","Celina","Claudie","Clemmie","Connie","Daisie","Deborah","Dessa","Easter","Eddie","Emelia","Emmie","Imogene","India","Jeanne","Joan","Lenore","Liddie","Lotta","Mame","Nevada","Rachael","Robert","Sina","Willa","Aline","Beryl","Charles","Daisey","Dorcas","Edmonia","Effa","Eldora","Eloise","Emmer","Era","Gena","Henry","Iris","Izora","Lennie","Lissie","Mallie","Malvina","Mathilde","Mazie","Queenie","Rosina","Salome","Theodora","Therese","Vena","Wanda","Wilda","Altha","Anastasia","Besse","Bird","Birtie","Clarissa","Claude","Delilah","Diana","Emelie","Erna","Fern","Florida","Frona","Hilma","Joseph","Juliet","Leonie","Lugenia","Mammie","Manda","Manerva","Manie","Nella","Paulina","Philomena","Rae","Selina","Sena","Theodosia","Tommie","Una","Vernie","Adela","Althea","Amalia","Amber","Angelina","Annabelle","Anner","Arie","Clarice","Corda","Corrie","Dell","Dellar","Donie","Doris","Elda","Elinor","Emeline","Emilia","Esta","Estell","Etha","Fred","Hope","Indiana","Ione","Jettie","Johnnie","Josiephine","Kitty","Lavina","Leda","Letta","Mahala","Marcia","Margarette","Maudie","Maye","Norah","Oda","Patty","Paula","Permelia","Rosalia","Roxanna","Sula","Vada","Winnifred","Adline","Almira","Alvena","Arizona","Becky","Bennie","Bernadette","Camille","Cordia","Corine","Dicie","Dove","Drusilla","Elena","Elenora","Elmina","Ethyl","Evalyn","Evelina","Faye","Huldah","Idell","Inga","Irena","Jewell","Kattie","Lavenia","Leslie","Lovina","Lulie","Magnolia","Margeret","Margery","Media","Millicent","Nena","Ocie","Orilla","Osie","Pansy","Ray","Rosia","Rowena","Shirley","Tabitha","Thomas","Verdie","Walter","Zetta","Zoa","Zona","Albertina","Albina","Alyce","Amie","Angela","Annis","Carol","Carra","Clarence","Clarinda","Delphia","Dillie","Doshie","Drucilla","Etna","Eugenie","Eulalia","Eve","Felicia","Florance","Fronie","Geraldine","Gina","Glenna","Grayce","Hedwig","Jessica","Jossie","Katheryn","Katy","Lea","Leanna","Leitha","Leone","Lidie","Loma","Lular","Magdalen","Maymie","Minervia","Muriel","Neppie","Olie","Onie","Osa","Otelia","Paralee","Patience","Rella","Rillie","Rosanna","Theo","Tilda","Tishie","Tressa","Viva","Yetta","Zena","Zola","Abby","Aileen","Alba","Alda","Alla","Alverta","Ara","Ardelia","Ardella","Arrie","Arvilla","Augustine","Aurora","Bama","Bena","Byrd","Calla","Camilla","Carey","Carlotta","Celestia","Cherry","Cinda","Classie","Claudine","Clemie","Clifford","Clyda","Creola","Debbie","Dee","Dinah","Doshia","Ednah","Edyth","Eleanora","Electa","Eola","Erie","Eudora","Euphemia","Evalena","Evaline","Faith","Fidelia","Freddie","Golda","Harry","Helma","Hermine","Hessie","Ivah","Janette","Jennette","Joella","Kathryne","Lacy","Lanie","Lauretta","Leana","Leatha","Leo","Liller","Lillis","Louetta","Madie","Mai","Martina","Maryann","Melva","Mena","Mercedes","Merle","Mima","Minda","Monica","Nealie","Netta","Nolia","Nonie","Odelia","Ottilie","Phyllis","Robbie","Sabina","Sada","Sammie","Suzanne","Sybilla","Thea","Tressie","Vallie","Venie","Viney","Wilhelmine","Winona","Zelda","Zilpha","Adelle","Adina","Adrienne","Albertine","Alys","Ana","Araminta","Arthur","Birtha","Bulah","Caddie","Celie","Charlotta","Clair","Concepcion","Cordella","Corrine","Delila","Delphine","Dosha","Edgar","Elaine","Elisa","Ellar","Elmire","Elvina","Ena","Estie","Etter","Fronnie","Genie","Georgina","Glenn","Gracia","Guadalupe","Gwendolyn","Hassie","Honora","Icy","Isa","Isadora","Jesse","Jewel","Joe","Johannah","Juana","Judith","Judy","Junie","Lavonia","Lella","Lemma","Letty","Linna","Littie","Lollie","Lorene","Louis","Love","Lovisa","Lucina","Lynn","Madora","Mahalia","Manervia","Manuela","Margarett","Margaretta","Margarita","Marilla","Mignon","Mozella","Natalie","Nelia","Nolie","Omie","Opal","Ossie","Ottie","Ottilia","Parthenia","Penelope","Pinkey","Pollie","Rennie","Reta","Roena","Rosalee","Roseanna","Ruthie","Sabra","Sannie","Selena","Sibyl","Tella","Tempie","Tennessee","Teressa","Texas","Theda","Thelma","Thursa","Ula","Vannie","Verona","Vertie","Wilma"];
+        
+        // Helper untuk judul dan deskripsi
+        const myTitle = () => `Live ${user?.username} ${acak_3_angka()}`;
+        const myDescription = () => `Watch ${user?.username} streaming now!`;
+
+        // Ambil semua link dari result
+        const links = (result || "").split("\n").filter(Boolean);
+
+        if (links.length === 0) {
+          Swal.fire({
+            icon: "error",
+            title: "No Links",
+            text: "Get Link dulu.."
+          });
+          return;
+        }
+
+        let shortResults: string[] = [];
+        for (let i = 0; i < links.length; i++) {
+          let branchKey = keyBranchIO && keyBranchIO !== "random"
+            ? keyBranchIO
+            : [
+                "key_live_fCi8upqGCVabSJbkaStGZkdfDCgekVsQ",
+                "key_live_nzgYEbyNIRb37dtxWE8ukincruh8aLPf",
+                "key_live_bAe0vkxGJRc3YjmH55BRHojiyvk5et9L"
+              ][Math.floor(Math.random() * 3)];
+          let myNameis = names[Math.floor(Math.random() * names.length)];
+          const desktopUrl = links[i];
+          const payload = {
+            branch_key: branchKey,
+            channel: "facebook",
+            feature: "onboarding",
+            campaign: "new product",
+            data: {
+              $marketing_title: `Live ${myNameis} ${acak_3_angka()}`,
+              $canonical_identifier: "content/" + acak_3_angka(),
+              $og_title: "🥵 🔥 " + myNameis + " : LIVE NOW 📽💖 !!",
+              $og_description: `Watch ${myNameis} streaming now!`,
+              $og_image_url: "https://static.cdninstagram.com/rsrc.php/v4/yK/r/-fFyD6YK6t6.png",
+              $desktop_url: desktopUrl,
+              $android_url: desktopUrl,
+              $ios_url: desktopUrl
+            }
+          };
+
+          try {
+            const { data } = await axios.post("https://api2.branch.io/v1/url", payload, {
+              headers: {
+                "Content-Type": "application/json"
+              }
+            });
+            shortResults.push(`https://l.wl.co/l?u=${data.url}` || "");
+          } catch (err: any) {
+            shortResults.push("ERROR");
+          }
+        }
+
+        setResultShort(shortResults.join("\n"));
+        Swal.fire({
+          icon: "success",
+          title: "Shortlink Created",
+          text: "Shortened " + shortResults.length + " links.",
+        });
+      }
+
     } catch (err: any) {
       console.error(err);
       Swal.fire({
         icon: "error",
         title: "Shortlink Failed",
-        text: err.response?.data?.message || "Unknown error",
+        text: err.response?.data || "Unknown error",
       });
     } finally {
       setIsLoadingShort(false);
+      closeSwal();
     }
   };
 
@@ -2558,7 +2625,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Option Link */}
+      {/* Option Domain&Link */}
       <div className="w-full max-w-xl bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-wrap md:flex-nowrap items-center gap-4 mt-4">
         {/* Domain */}
         <div className="flex flex-col min-w-[160px]">
@@ -2598,8 +2665,8 @@ export default function Dashboard() {
 
       </div>
 
-      {/* Short URL */}
-      <div hidden className="w-full max-w-xl bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-wrap md:flex-nowrap items-center gap-4 mt-4">
+      {/* Option Short URL */}
+      <div className="w-full max-w-xl bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-wrap md:flex-nowrap items-center gap-4 mt-4">
         {/* Opsi Shortener */}
         <div className="flex flex-col min-w-[160px]">
           <label className="mb-1 text-gray-700 dark:text-gray-300 font-medium">
@@ -2610,23 +2677,27 @@ export default function Dashboard() {
             onChange={(e) => setShortURL(e.target.value)}
             className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-            <option value="0">is.gd</option>
-            <option value="1">u.to</option>
+            <option value="0">branch.io</option>
+            <option hidden value="1">u.to</option>
             </select>
         </div>
 
         {/* Opsi Debugger */}
         <div className="flex flex-col min-w-[160px]">
           <label className="mb-1 text-gray-700 dark:text-gray-300 font-medium">
-            Debugger
+            Key
           </label>
           <select
-            value={debug}
-            onChange={(e) => setDebug(e.target.value)}
+            id="optionKeyBranch"
+            value={keyBranchIO}
+            onChange={(e) => setKeyBranchIO(e.target.value)}
             className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
-            <option value="https://l.wl.co/l?u=">l.wl.co</option>
-            <option value="">---</option>
+            <option value="random">{"{ RANDOM KEY }"}</option>
+            <option value="key_live_fCi8upqGCVabSJbkaStGZkdfDCgekVsQ">key_live_fCi8upqGCVabSJbkaStGZkdfDCgekVsQ</option>
+            <option value="key_live_nzgYEbyNIRb37dtxWE8ukincruh8aLPf">key_live_nzgYEbyNIRb37dtxWE8ukincruh8aLPf</option>
+            <option value="key_live_bAe0vkxGJRc3YjmH55BRHojiyvk5et9L">key_live_bAe0vkxGJRc3YjmH55BRHojiyvk5et9L</option>
+
           </select>
         </div>
 
@@ -2650,15 +2721,42 @@ export default function Dashboard() {
         </label>
         <textarea
           wrap="off"
-          value={result || resultShort || ""}
+          value={resultShort || result || ""}
           readOnly
           rows={4}
           onClick={() => {
-            navigator.clipboard.writeText(result || resultShort || "");
+            navigator.clipboard.writeText(resultShort ||result || "");
             Swal.fire({
               icon: "success",
               title: "Copied to Clipboard",
               text: "Link has been copied to clipboard.",
+              showConfirmButton: false,
+              timer: 1000,
+            });
+          }}
+          className="w-full p-3 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none border-0"
+          placeholder="Hasil link akan muncul di sini..."
+        />
+      </div>
+
+      {/* Shortened URL */}
+      <div hidden className="w-full max-w-xl bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 mt-4">
+        <label className="block mb-2 text-gray-700 dark:text-gray-300 font-medium">
+          Shortened Link
+        </label>
+        <textarea
+          wrap="off"
+          value={resultShort || ""}
+          readOnly
+          rows={4}
+          onClick={() => {
+            navigator.clipboard.writeText(resultShort || "");
+            Swal.fire({
+              icon: "success",
+              title: "Copied to Clipboard",
+              text: "Link has been copied to clipboard.",
+              showConfirmButton: false,
+              timer: 1000,
             });
           }}
           className="w-full p-3 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none border-0"
@@ -2668,7 +2766,7 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer className="mt-6 text-gray-500 dark:text-gray-400">
-        <p>Powered by ZDEV &copy; 2025 All rights reserved.</p>
+        <p>Powered by BalaneSöhib &copy; 2025 All rights reserved.</p>
       </footer>
     </div>
   );
