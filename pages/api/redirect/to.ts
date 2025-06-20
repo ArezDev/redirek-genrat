@@ -61,6 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   };
 
+  await getCountry();
   for (const blocked of blockedIsps) {
     if (whatIsp.includes(blocked)) {
       return res.status(403).json({ error: `Access denied!` });
