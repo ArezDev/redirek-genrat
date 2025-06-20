@@ -38,9 +38,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const startOfDay = dayjs(nowJS).startOf('day').toDate();
   const endOfDay = dayjs(nowJS).endOf('day').toDate();
   let whatsCountry = '';
+  let whatIsp = '';
   const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.socket.remoteAddress || '';
   const userAgent = req.headers["user-agent"] || "Unknown";
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+  //block bot trafik
+  const blockedIsps = ['Facebook', 'Google', 'Meta', 'Googlebot'];
   const getCountry = async ()  => {
     try {
       const result = await axios.get(`https://ipwhois.pro/${ip}`, {
@@ -50,12 +53,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
       if (result && result.data) {
         whatsCountry = result.data.country_code;
+        whatIsp = result.data?.connection?.isp || '';
       }
       return whatsCountry  || 'XX';
     } catch (error) {
       return whatsCountry  || 'XX';
     }
   };
+
+  for (const blocked of blockedIsps) {
+    if (whatIsp.includes(blocked)) {
+      return res.status(403).json({ error: `Access denied!` });
+    }
+  }
 
   const sub = Array.isArray(req.query.sub) ? req.query.sub[0] : (req.query.sub ?? 'unknown');
   const network = Array.isArray(req.query.network) ? req.query.network[0] : (req.query.network ?? 'unknown');
