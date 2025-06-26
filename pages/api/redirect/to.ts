@@ -1,8 +1,9 @@
-import { db } from '@/utils/firebaseAdmin';
+//import { db } from '@/utils/firebaseAdmin';
 import { NextApiRequest, NextApiResponse } from 'next';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import { Timestamp } from 'firebase-admin/firestore';
+import db from '@/utils/db';
 
 interface ClickData {
   user: string;
@@ -82,15 +83,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         network.includes('TF') ? 'LOSPOLLOS' : 
         network;
         
-  const cekUser = await db
-    .collection('users')
-    .where('username', '==', sub)
-    .limit(1)
-    .get();
+  //Firebase
+  // const cekUser = await db
+  //   .collection('users')
+  //   .where('username', '==', sub)
+  //   .limit(1)
+  //   .get();
 
-  if (cekUser.empty) {
+  // if (cekUser.empty) {
+  //   return res.status(404).json({ error: `User ${sub} not found. Click is invalid.` });
+  // }
+
+  // Use mysql2 to check if user exists
+  const [rows] = await db.execute(
+    'SELECT id FROM users WHERE username = ? LIMIT 1',
+    [sub]
+  );
+
+  if (!Array.isArray(rows) || rows.length === 0) {
     return res.status(404).json({ error: `User ${sub} not found. Click is invalid.` });
   }
+
+  //await connection.end();
 
   const sourceType =
     userAgent.includes("Instagram") ? "instagram"
@@ -118,67 +132,161 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     });
 
-    const clickPayload: ClickData = {
+    //Firebase
+    // const clickPayload: ClickData = {
+    //   user: sub,
+    //   network: networkId,
+    //   country: await getCountry(),
+    //   source: userAgent,
+    //   gadget: sourceType,
+    //   ip: ip || '',
+    //   created_at: now,
+    // };
+
+    // await db.collection('clicks').add(clickPayload);
+
+    // Insert click data into MySQL
+    const clickPayload = {
       user: sub,
       network: networkId,
-      country: await getCountry(),
+      country: whatsCountry,
       source: userAgent,
       gadget: sourceType,
       ip: ip || '',
-      created_at: now,
+      created_at: nowJS,
     };
 
-    await db.collection('clicks').add(clickPayload);
+    await db.execute(
+      `INSERT INTO clicks (user, network, country, source, gadget, ip, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+      clickPayload.user,
+      clickPayload.network,
+      clickPayload.country,
+      clickPayload.source,
+      clickPayload.gadget,
+      clickPayload.ip,
+      clickPayload.created_at,
+      ]
+    );
 
     // Cek apakah summary hari ini untuk user sudah ada
-    const summaryDocId = `${userId}_${createdDate}`;
-    const summaryRef = db.collection('user_summary').doc(summaryDocId);
-    const summarySnap = await summaryRef.get();
+    // const summaryDocId = `${userId}_${createdDate}`;
+    // const summaryRef = db.collection('user_summary').doc(summaryDocId);
+    // const summarySnap = await summaryRef.get();
 
-    if (summarySnap.exists) {
-      // Kalau sudah ada, cukup update total_click dan created_hour
-      const current = summarySnap.data() as SummaryData;
+    // if (summarySnap.exists) {
+    //   // Kalau sudah ada, cukup update total_click dan created_hour
+    //   const current = summarySnap.data() as SummaryData;
 
-      await summaryRef.set({
-        total_click: (current.total_click || 0) + 1,
-        created_at: now,
-        created_hour: createdHour, // tetap simpan jam klik terakhir
-      }, { merge: true });
+    //   await summaryRef.set({
+    //     total_click: (current.total_click || 0) + 1,
+    //     created_at: now,
+    //     created_hour: createdHour, // tetap simpan jam klik terakhir
+    //   }, { merge: true });
 
+    // } else {
+    //   // Kalau belum ada, hitung earning hari ini
+    //   const leadsSnap = await db.collection("leads")
+    //     .where("userId", "==", userId)
+    //     .where("created_at", ">=", Timestamp.fromDate(startOfDay))
+    //     .where("created_at", "<=", Timestamp.fromDate(endOfDay))
+    //     .get();
+
+    //   let earningToday = 0;
+    //   leadsSnap.forEach(doc => {
+    //     const data = doc.data();
+    //     if (data.created_at && typeof data.earning === 'number') {
+    //       earningToday += data.earning;
+    //     }
+    //   });
+
+    //   const newSummary: SummaryData = {
+    //     user: userId,
+    //     total_click: 1,
+    //     total_earning: earningToday,
+    //     created_at: now,
+    //     created_date: createdDate,
+    //     created_hour: createdHour,
+    //     created_week: createdWeek,
+    //   };
+
+    //   await summaryRef.set(newSummary);
+    // }
+
+    // // Save live click
+    // await db.collection('live_clicks').doc(`LiveClick_${userId}_${dayjs(nowJS).format('HHmmss')}`).set({
+    //   ...clickPayload,
+    //   user: userId,
+    // });
+
+    // ==Mysql Update ==///
+    // == MySQL Update for user_summary == //
+    // Check if summary for today exists
+    const [summaryRows] = await db.execute(
+      'SELECT id, total_click, total_earning FROM user_summary WHERE user = ? AND created_date = ? LIMIT 1',
+      [userId, createdDate]
+    ) as [Array<{ id: number, total_click: number, total_earning: number }>, any];
+
+    if (Array.isArray(summaryRows) && summaryRows.length > 0) {
+      // If exists, update total_click and created_hour
+      const current = summaryRows[0];
+      await db.execute(
+      `UPDATE user_summary 
+       SET total_click = ?, created_at = ?, created_hour = ? 
+       WHERE id = ?`,
+      [
+        (current.total_click || 0) + 1,
+        nowJS,
+        createdHour,
+        current.id
+      ]
+      );
     } else {
-      // Kalau belum ada, hitung earning hari ini
-      const leadsSnap = await db.collection("leads")
-        .where("userId", "==", userId)
-        .where("created_at", ">=", Timestamp.fromDate(startOfDay))
-        .where("created_at", "<=", Timestamp.fromDate(endOfDay))
-        .get();
-
+      // If not exists, calculate today's earning
+      const [leadsRows] = await db.execute(
+      `SELECT earning FROM leads 
+       WHERE userId = ? AND created_at >= ? AND created_at <= ?`,
+      [userId, startOfDay, endOfDay]
+      );
       let earningToday = 0;
-      leadsSnap.forEach(doc => {
-        const data = doc.data();
-        if (data.created_at && typeof data.earning === 'number') {
-          earningToday += data.earning;
+      if (Array.isArray(leadsRows)) {
+      for (const row of leadsRows as { earning: number }[]) {
+        if (typeof row.earning === 'number') {
+        earningToday += row.earning;
         }
-      });
-
-      const newSummary: SummaryData = {
-        user: userId,
-        total_click: 1,
-        total_earning: earningToday,
-        created_at: now,
-        created_date: createdDate,
-        created_hour: createdHour,
-        created_week: createdWeek,
-      };
-
-      await summaryRef.set(newSummary);
+      }
+      }
+      await db.execute(
+      `INSERT INTO user_summary 
+        (user, total_click, total_earning, created_at, created_date, created_hour, created_week) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userId,
+        1,
+        earningToday,
+        nowJS,
+        createdDate,
+        createdHour,
+        createdWeek
+      ]
+      );
     }
 
-    // Save live click
-    await db.collection('live_clicks').doc(`LiveClick_${userId}_${dayjs(nowJS).format('HHmmss')}`).set({
-      ...clickPayload,
-      user: userId,
-    });
+    // Save live click to MySQL (live_clicks table)
+    await db.execute(
+      `INSERT INTO live_clicks (user, network, country, source, gadget, ip, created_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+      userId,
+      clickPayload.network,
+      clickPayload.country,
+      clickPayload.source,
+      clickPayload.gadget,
+      clickPayload.ip,
+      nowJS
+      ]
+    );
 
     return res.status(200).json({
       clickId: encoded,

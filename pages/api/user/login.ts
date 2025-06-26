@@ -1,13 +1,15 @@
 // pages/api/login.ts
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUserByUsername } from "@/utils/firebaseAdmin"; // asumsi ada fungsi ambil user
+//import { getUserByUsername } from "@/utils/firebaseAdmin"; // asumsi ada fungsi ambil user
 import { compare } from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { getUserByUsername } from "@/utils/db";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
 
   const { username, password } = req.body;
+  //const user = await getUserByUsername(username);
   const user = await getUserByUsername(username);
 
   if (!user || !(await compare(password, user.password))) {
