@@ -34,13 +34,30 @@ export default async function handler(
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 
+  // const now = Timestamp.now();
+  // const nowJS = new Date();
+  // const createdDate = dayjs(nowJS).format("YYYY-MM-DD");
+  // const createdHour = dayjs(nowJS).format("HH:00");
+  // const createdWeek = dayjs(nowJS).startOf("week").format("YYYY-MM-DD");
+  // const startOfDay = dayjs(nowJS).startOf("day").toDate();
+  // const endOfDay = dayjs(nowJS).endOf("day").toDate();
+
+  // update
   const now = Timestamp.now();
   const nowJS = new Date();
-  const createdDate = dayjs(nowJS).format("YYYY-MM-DD");
-  const createdHour = dayjs(nowJS).format("HH:00");
-  const createdWeek = dayjs(nowJS).startOf("week").format("YYYY-MM-DD");
-  const startOfDay = dayjs(nowJS).startOf("day").toDate();
-  const endOfDay = dayjs(nowJS).endOf("day").toDate();
+  const shifted = dayjs(nowJS).subtract(5, "hour"); // Geser -5 jam
+
+  const createdDate = shifted.format("YYYY-MM-DD");
+  const createdHour = shifted.format("HH:00");
+  const createdWeek = shifted.startOf("week").format("YYYY-MM-DD");
+
+  const startOfDay = shifted.startOf("day").add(5, "hour").toDate();
+  const endOfDay = dayjs(startOfDay)
+    .add(1, "day")
+    .subtract(1, "millisecond")
+    .toDate();
+  // end update
+
   let whatsCountry = "";
   let whatIsp = "";
   const ip =
@@ -263,11 +280,19 @@ export default async function handler(
     if (Array.isArray(summaryRows) && summaryRows.length > 0) {
       // If exists, update total_click and created_hour
       const current = summaryRows[0];
+      // await db.execute(
+      //   `UPDATE user_summary
+      //  SET total_click = ?, created_at = ?, created_hour = ?
+      //  WHERE id = ?`,
+      //   [(current.total_click || 0) + 1, nowJS, createdHour, current.id]
+      // );
+      const logicalTime = shifted.toDate();
+
       await db.execute(
         `UPDATE user_summary 
-       SET total_click = ?, created_at = ?, created_hour = ? 
-       WHERE id = ?`,
-        [(current.total_click || 0) + 1, nowJS, createdHour, current.id]
+        SET total_click = ?, created_at = ?, created_hour = ? 
+        WHERE id = ?`,
+        [(current.total_click || 0) + 1, logicalTime, createdHour, current.id]
       );
     } else {
       // If not exists, calculate today's earning
