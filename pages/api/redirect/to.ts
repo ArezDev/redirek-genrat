@@ -36,11 +36,24 @@ export default async function handler(
 
   const now = Timestamp.now();
   const nowJS = new Date();
-  const createdDate = dayjs(nowJS).format("YYYY-MM-DD");
-  const createdHour = dayjs(nowJS).format("HH:00");
-  const createdWeek = dayjs(nowJS).startOf("week").format("YYYY-MM-DD");
-  const startOfDay = dayjs(nowJS).startOf("day").toDate();
-  const endOfDay = dayjs(nowJS).endOf("day").toDate();
+  // const createdDate = dayjs(nowJS).format("YYYY-MM-DD");
+  // const createdHour = dayjs(nowJS).format("HH:00");
+  // const createdWeek = dayjs(nowJS).startOf("week").format("YYYY-MM-DD");
+  // const startOfDay = dayjs(nowJS).startOf("day").toDate();
+  // const endOfDay = dayjs(nowJS).endOf("day").toDate();
+
+  //Update
+  const shifted = dayjs(nowJS).subtract(5, "hour"); // Geser -5 jam
+  const createdDate = shifted.format("YYYY-MM-DD");
+  const createdHour = shifted.format("HH:00");
+  const createdWeek = shifted.startOf("week").format("YYYY-MM-DD");
+  const startOfDay = shifted.startOf("day").add(5, "hour").toDate();
+  const endOfDay = dayjs(startOfDay)
+    .add(1, "day")
+    .subtract(1, "millisecond")
+    .toDate();
+  // end update
+
   let whatsCountry = "";
   let whatIsp = "";
   const ip =
