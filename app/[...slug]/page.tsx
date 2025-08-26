@@ -9,7 +9,7 @@ export default function Link() {
   const router = useRouter();
   const pathname = usePathname();
   const [statusText, setStatusText] = useState('Loading...');
-  //const [networkData, setNetworkData] = useState<string | null>(null);
+  const [networkData, setNetworkData] = useState<string | null>(null);
 
   useEffect(() => {
     if (!pathname) return;
@@ -60,24 +60,36 @@ export default function Link() {
         const parts = targetId.split('|');
         if (parts.length < 3) {
           setStatusText('Invalid target data structure.');
+          console.log('pakai shortcode');
+          const ok = await axios.post('/api/postplay/check', { shortcode: segment });
+          const finalUrl = ok.data.url;
+          if (!finalUrl) {
+              setStatusText('No URL found for this link.');
+              return;
+          }
+          const ua = ok.data.ua || '';
+          console.log(ua);
+          if(ua.includes('facebookexternalhit') || ua.includes('Facebot')) {
+            router.push(ok.data.img);
+            return;
+          }
+          setStatusText('Redirecting...');
+          setNetworkData(finalUrl);
+          router.push(finalUrl);
           return;
         }
 
-        const [sub, networkCode] = parts;
-
         // 🔍 Fetch smartlink data
+        const [sub, networkCode] = parts;
         const get_smartlink = await axios.get('/api/get/smartlink', {
           params: { network: networkCode }
         });
 
         const matchedNetwork = get_smartlink.data.smartlink;
-
         if (!matchedNetwork) {
           setStatusText('Network not found in smartlinks.');
           return;
         }
-
-        //console.log(matchedNetwork)
 
         //setNetworkData(JSON.stringify(matchedNetwork));
         //setStatusText('Creating click record...');
@@ -94,15 +106,15 @@ export default function Link() {
           return;
         }
 
-        const leadsId = create_clicks?.data?.clickId;
-
         // Replace placeholders
+        const leadsId = create_clicks?.data?.clickId;
         const finalUrl = matchedNetwork.url
           .replaceAll('{user}', sub)
           .replaceAll('{leads}', leadsId);
 
         // Redirect
-        setStatusText('Redirecting to destination...');
+        setStatusText('Loading please wait...');
+        setNetworkData(finalUrl);
         router.push(finalUrl);
       } catch (err) {
         console.error('[CLICK API ERROR]', err);

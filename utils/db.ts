@@ -37,9 +37,4 @@ export const getUserByUsername = async (username: string) => {
   }
 };
 
-export const getSmartlink = async (network: string) => {
-    
-    
-}
-
 export default db;

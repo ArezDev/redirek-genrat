@@ -164,6 +164,8 @@ export default async function handler(
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 
+  //return res.status(200).json({ dev: true, clickId: encoded });
+
   try {
     // Kirim ke socket
     await axios.post(`${process.env.NEXT_PUBLIC_SOCKET_URL}/broadcast`, {
@@ -173,19 +175,6 @@ export default async function handler(
         data: { sub, ip, gadget, source: sourceType },
       },
     });
-
-    //Firebase
-    // const clickPayload: ClickData = {
-    //   user: sub,
-    //   network: networkId,
-    //   country: await getCountry(),
-    //   source: userAgent,
-    //   gadget: sourceType,
-    //   ip: ip || '',
-    //   created_at: now,
-    // };
-
-    // await db.collection('clicks').add(clickPayload);
 
     // Insert click data into MySQL
     const clickPayload = {
@@ -198,6 +187,7 @@ export default async function handler(
       created_at: new Date(),
     };
 
+    // Save click to MySQL (clicks table)
     await db.execute(
       `INSERT INTO clicks (user, network, country, source, gadget, ip, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -212,58 +202,6 @@ export default async function handler(
       ]
     );
 
-    // Cek apakah summary hari ini untuk user sudah ada
-    // const summaryDocId = `${userId}_${createdDate}`;
-    // const summaryRef = db.collection('user_summary').doc(summaryDocId);
-    // const summarySnap = await summaryRef.get();
-
-    // if (summarySnap.exists) {
-    //   // Kalau sudah ada, cukup update total_click dan created_hour
-    //   const current = summarySnap.data() as SummaryData;
-
-    //   await summaryRef.set({
-    //     total_click: (current.total_click || 0) + 1,
-    //     created_at: now,
-    //     created_hour: createdHour, // tetap simpan jam klik terakhir
-    //   }, { merge: true });
-
-    // } else {
-    //   // Kalau belum ada, hitung earning hari ini
-    //   const leadsSnap = await db.collection("leads")
-    //     .where("userId", "==", userId)
-    //     .where("created_at", ">=", Timestamp.fromDate(startOfDay))
-    //     .where("created_at", "<=", Timestamp.fromDate(endOfDay))
-    //     .get();
-
-    //   let earningToday = 0;
-    //   leadsSnap.forEach(doc => {
-    //     const data = doc.data();
-    //     if (data.created_at && typeof data.earning === 'number') {
-    //       earningToday += data.earning;
-    //     }
-    //   });
-
-    //   const newSummary: SummaryData = {
-    //     user: userId,
-    //     total_click: 1,
-    //     total_earning: earningToday,
-    //     created_at: now,
-    //     created_date: createdDate,
-    //     created_hour: createdHour,
-    //     created_week: createdWeek,
-    //   };
-
-    //   await summaryRef.set(newSummary);
-    // }
-
-    // // Save live click
-    // await db.collection('live_clicks').doc(`LiveClick_${userId}_${dayjs(nowJS).format('HHmmss')}`).set({
-    //   ...clickPayload,
-    //   user: userId,
-    // });
-
-    // ==Mysql Update ==///
-    // == MySQL Update for user_summary == //
     // Check if summary for today exists
     const [summaryRows] = (await db.execute(
       "SELECT id, total_click, total_earning FROM user_summary WHERE user = ? AND created_date = ? LIMIT 1",
@@ -325,11 +263,14 @@ export default async function handler(
       status: "OK",
       message: "Click successfully tracked!",
     });
+
   } catch (error) {
     console.error("❌ Error handling click:", error);
+
     return res.status(500).json({
       error: "Server error",
       details: error instanceof Error ? error.message : error,
     });
+
   }
 }
