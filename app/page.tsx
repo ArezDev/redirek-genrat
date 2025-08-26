@@ -4771,7 +4771,7 @@ export default function Dashboard() {
             });
 
             shortResults.push("https://" + 
-              randomSub[Math.floor(Math.random() * randomSub.length)].toLowerCase() + "." 
+              randomSub[Math.floor(Math.random() * randomSub.length)].toLowerCase()
             + randomSub[Math.floor(Math.random() * randomSub.length)].toLowerCase() + "." 
             + domainList[Math.floor(Math.random()*domainList.length)] 
             + "/" + data.data || "");
