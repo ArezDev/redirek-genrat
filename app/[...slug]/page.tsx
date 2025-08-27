@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function Link() {
+  // Router and state
   const router = useRouter();
   const pathname = usePathname();
   const [statusText, setStatusText] = useState('Loading...');
@@ -67,12 +68,12 @@ export default function Link() {
               setStatusText('No URL found for this link.');
               return;
           }
-          const ua = ok.data.ua || '';
-          console.log(ua);
-          if(ua.includes('facebookexternalhit') || ua.includes('Facebot')) {
-            router.push(ok.data.img);
-            return;
-          }
+          // const ua = ok.data.ua || '';
+          // console.log(ua);
+          // if(ua.includes('facebookexternalhit') || ua.includes('Facebot')) {
+          //   router.push(ok.data.img);
+          //   return;
+          // }
           setStatusText('Redirecting...');
           setNetworkData(finalUrl);
           router.push(finalUrl);
@@ -117,8 +118,16 @@ export default function Link() {
         setNetworkData(finalUrl);
         router.push(finalUrl);
       } catch (err) {
-        console.error('[CLICK API ERROR]', err);
-        setStatusText('Error during processing.');
+        let details: string | undefined;
+        let message: string | undefined;
+        if (typeof err === 'object' && err !== null) {
+          details = (err as any).details;
+          message = (err as any).message;
+          console.error('[CLICK API ERROR]', details || message || err);
+        } else {
+          console.error('[CLICK API ERROR]', err);
+        }
+        setStatusText(`Error during processing. ${details || message || err}`);
       }
     };
     processRedirect();

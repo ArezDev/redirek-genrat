@@ -23,7 +23,7 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
 
   //shorting link
-  const [domain, setDomain] = useState("");
+  const [domain, setDomain] = useState("0");
   const [shortURL, setShortURL] = useState("");
   const [isLoadingShort, setIsLoadingShort] = useState(false);
   const [resultShort, setResultShort] = useState("");
@@ -4883,7 +4883,7 @@ export default function Dashboard() {
         </div>
 
         {/* Debug Option */}
-        <div className="flex flex-col min-w-[100px]">
+        <div className="flex flex-col min-w-[150px]">
           <label className="mb-1 text-gray-700 dark:text-gray-300 font-medium">
             Debugger
           </label>
@@ -4898,7 +4898,7 @@ export default function Dashboard() {
         </div>
 
         {/* Total generated link */}
-        <div className="flex flex-col min-w-[75px]">
+        <div className="flex flex-col min-w-[100px]">
           <label className="mb-1 text-gray-700 dark:text-gray-300 font-medium">
             Total Links
           </label>
@@ -4912,23 +4912,12 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Button short! */}
-        <div className="flex flex-col justify-end min-w-[100px]">
-          <label className="invisible mb-1">Action</label>
-          <button
-            onClick={generateLink}
-            disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors whitespace-nowrap w-full"
-          >
-            {isLoading ? "..." : "Get"}
-          </button>
-        </div>
       </div>
 
       {/* Option Domain&Link */}
       <div className="w-full max-w-xl bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 flex flex-wrap md:flex-nowrap items-center gap-4 mt-4">
         {/* Domain */}
-        <div className="flex flex-col min-w-[160px]">
+        <div className="flex flex-col min-w-[150px]">
           <label className="mb-1 text-gray-700 dark:text-gray-300 font-medium">
             Domain
           </label>
@@ -4937,7 +4926,7 @@ export default function Dashboard() {
             onChange={(e) => setDomain(e.target.value)}
             className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-            <option value="0">{'{RANDOM GLOBAL DOMAIN}'}</option>
+            <option value="0">{'{RANDOM DOMAIN}'}</option>
             <option value="facebooke.cam">facebooke.cam</option>
             <option value="friendsfb.pro">friendsfb.pro</option>
             <option value="fwbstars.com">fwbstars.com</option>
@@ -4948,9 +4937,9 @@ export default function Dashboard() {
         </div>
 
         {/* Mode Link */}
-        <div className="flex flex-col min-w-[200px]">
+        <div className="flex flex-col min-w-[150px]">
           <label className="mb-1 text-gray-700 dark:text-gray-300 font-medium">
-            Mode Link
+            Link
           </label>
           <select
             value={modeLink}
@@ -4961,6 +4950,18 @@ export default function Dashboard() {
             <option value="binary">binary</option>
             <option value="base64">base64</option>
           </select>
+        </div>
+        
+        {/* Button short! */}
+        <div className="flex flex-col justify-end min-w-[100px]">
+          <label className="invisible mb-1">Action</label>
+          <button
+            onClick={generateLink}
+            disabled={isLoading}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors whitespace-nowrap w-full"
+          >
+            {isLoading ? "..." : "Get"}
+          </button>
         </div>
 
       </div>

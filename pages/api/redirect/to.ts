@@ -2,28 +2,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import dayjs from "dayjs";
 import axios from "axios";
-import { Timestamp } from "firebase-admin/firestore";
 import db from "@/utils/db";
-
-interface ClickData {
-  user: string;
-  network: string;
-  country: string;
-  source: string;
-  gadget: string;
-  ip: string;
-  created_at: Timestamp;
-}
-
-interface SummaryData {
-  user: string;
-  total_click: number;
-  total_earning: number;
-  created_at: Timestamp;
-  created_date: string;
-  created_hour: string;
-  created_week: string;
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -34,14 +13,7 @@ export default async function handler(
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 
-  const now = Timestamp.now();
   const nowJS = new Date();
-  // const createdDate = dayjs(nowJS).format("YYYY-MM-DD");
-  // const createdHour = dayjs(nowJS).format("HH:00");
-  // const createdWeek = dayjs(nowJS).startOf("week").format("YYYY-MM-DD");
-  // const startOfDay = dayjs(nowJS).startOf("day").toDate();
-  // const endOfDay = dayjs(nowJS).endOf("day").toDate();
-
   //Update
   const shifted = dayjs(nowJS).subtract(5, "hour"); // Geser -5 jam
   const createdDate = shifted.format("YYYY-MM-DD");
@@ -71,7 +43,7 @@ export default async function handler(
     try {
       const result = await axios.get(`https://ipwhois.pro/${ip}`, {
         params: {
-          key: "E9wJiNbCXeXaP88o",
+          key: process.env.NEXT_PUBLIC_IPWHOIS_KEY,
         },
       });
       if (result && result.data) {
@@ -111,18 +83,7 @@ export default async function handler(
     ? "LOSPOLLOS"
     : network;
 
-  //Firebase
-  // const cekUser = await db
-  //   .collection('users')
-  //   .where('username', '==', sub)
-  //   .limit(1)
-  //   .get();
-
-  // if (cekUser.empty) {
-  //   return res.status(404).json({ error: `User ${sub} not found. Click is invalid.` });
-  // }
-
-  // Use mysql2 to check if user exists
+  // check if user exists
   const [rows] = await db.execute(
     "SELECT id FROM users WHERE username = ? LIMIT 1",
     [sub]
@@ -133,8 +94,6 @@ export default async function handler(
       .status(404)
       .json({ error: `User ${sub} not found. Click is invalid.` });
   }
-
-  //await connection.end();
 
   const sourceType = userAgent.includes("Instagram")
     ? "instagram"
@@ -155,7 +114,6 @@ export default async function handler(
     : "default";
 
   const gadget = isMobile ? "WAP" : "WEB";
-  //const encoded = Buffer.from(`${sub}|${await getCountry()}|${ip}|${gadget}|${networkId}`).toString('base64');
   const rawEncoded = Buffer.from(
     `${sub},${await getCountry()},${ip},${gadget},${networkId}`
   ).toString("base64");
