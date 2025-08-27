@@ -141,7 +141,7 @@ export async function middleware(req: NextRequest, res: NextResponse) {
         const buffer = await res.arrayBuffer();
         const contentType = res.headers.get("content-type") || "image/jpeg";
         return new Response(buffer, {
-          status: 206,
+          status: 302,
           headers: {
             "Content-Type": contentType,
             "Content-Length": buffer.byteLength.toString(),
