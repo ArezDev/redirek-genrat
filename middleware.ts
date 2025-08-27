@@ -58,9 +58,7 @@ export async function middleware(req: NextRequest, res: NextResponse) {
       const target = data.img;
 
       // If data contains the URL, redirect to the image
-      if (data && target) {
-        //return NextResponse.redirect(data.img, 302);
-        // Create an HTML response with a meta refresh for redirection
+      if (data) {
         const html = `
           <!DOCTYPE html>
           <html>
@@ -73,8 +71,12 @@ export async function middleware(req: NextRequest, res: NextResponse) {
               Redirecting to <a href="${target}">${target}</a>
             </body>
           </html>`.trim();
+          
+      if (target) {
+        return NextResponse.redirect(target, 302);
+      }
 
-        const res = await fetch('https://generate.balanesohib.eu.org/438397737127517469.ico');
+        const res = await fetch(target);
         const buffer = await res.arrayBuffer();
         const contentType = res.headers.get("content-type") || "image/jpeg";
 
@@ -88,8 +90,10 @@ export async function middleware(req: NextRequest, res: NextResponse) {
         });
       }
 
+
       // kalau request biasa, bisa redirect / kasih html
-      return Response.redirect(target, 302);
+      //return Response.redirect(target, 302);
+      
       
     } catch (err) {
       console.error('Error in Facebook crawler request:', err);
