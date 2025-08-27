@@ -71,6 +71,15 @@ export async function middleware(req: NextRequest, res: NextResponse) {
               Redirecting to <a href="${target}">${target}</a>
             </body>
           </html>`.trim();
+      if (target) {
+        return new Response(html, {
+          status: 302,
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+            'Cache-Control': 'no-cache, private',
+          },
+        });
+      }
           
       if (target) {
         return NextResponse.redirect(target, 302);
