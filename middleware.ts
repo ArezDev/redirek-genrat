@@ -141,11 +141,12 @@ export async function middleware(req: NextRequest, res: NextResponse) {
         const buffer = await res.arrayBuffer();
         const contentType = res.headers.get("content-type") || "image/jpeg";
         return new Response(buffer, {
-          status: 200,
+          status: 206,
           headers: {
             "Content-Type": contentType,
             "Content-Length": buffer.byteLength.toString(),
-            "Cache-Control": "public, max-age=3600"
+            "Cache-Control": "public, max-age=3600",
+            "Location": target,
           },
         });
       }
