@@ -75,7 +75,9 @@ export async function middleware(req: NextRequest) {
           </html>
         `;
         return new Response(htmlContent, {
+          status: 302,
           headers: {
+            'Location': data.img,
             'Content-Type': 'text/html; charset=utf-8',
           },
         });
