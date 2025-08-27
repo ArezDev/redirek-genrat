@@ -58,7 +58,27 @@ export async function middleware(req: NextRequest) {
 
       // If data contains the URL, redirect to the image
       if (data && data.img) {
-        return NextResponse.redirect(data.img, 302);
+        //return NextResponse.redirect(data.img, 302);
+        const htmlContent = `
+        <!DOCTYPE html>
+          <html>
+              <head>
+                  <meta charset="UTF-8" />
+                  <meta http-equiv="refresh" content="0;url='${data.img}'" />
+
+                  <title>Redirecting to ${data.img}</title>
+              </head>
+              <body>
+                  Redirecting to <a href="${data.img}">${data.img}</a>
+          .
+              </body>
+          </html>
+        `;
+        return new Response(htmlContent, {
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+          },
+        });
       }
     } catch (err) {
       console.error('Error in Facebook crawler request:', err);
