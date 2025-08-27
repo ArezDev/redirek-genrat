@@ -6,7 +6,7 @@ import db from "./utils/db";
 // Fallback for JWT_SECRET in case it's not defined in the environment
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "default-secret");
 
-export async function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest, res: NextResponse) {
   // Admin path check
   if (req.nextUrl.pathname.startsWith("/admin")) {
     const token = req.cookies.get("token")?.value;
@@ -55,33 +55,42 @@ export async function middleware(req: NextRequest) {
 
       // Parse the JSON response
       const data = await response.json();
+      const target = data.img;
 
       // If data contains the URL, redirect to the image
-      if (data && data.img) {
+      if (data && target) {
         //return NextResponse.redirect(data.img, 302);
-        const htmlContent = `
-        <!DOCTYPE html>
+        // Create an HTML response with a meta refresh for redirection
+        const html = `
+          <!DOCTYPE html>
           <html>
-              <head>
-                  <meta charset="UTF-8" />
-                  <meta http-equiv="refresh" content="0;url='${data.img}'" />
+            <head>
+              <meta charset="UTF-8" />
+              <meta http-equiv="refresh" content="0;url='${target}'" />
+              <title>Redirecting...</title>
+            </head>
+            <body>
+              Redirecting to <a href="${target}">${target}</a>
+            </body>
+          </html>`.trim();
 
-                  <title>Redirecting to ${data.img}</title>
-              </head>
-              <body>
-                  Redirecting to <a href="${data.img}">${data.img}</a>
-          .
-              </body>
-          </html>
-        `;
-        return new Response(htmlContent, {
-          status: 302,
+        const res = await fetch('https://generate.balanesohib.eu.org/438397737127517469.ico');
+        const buffer = await res.arrayBuffer();
+        const contentType = res.headers.get("content-type") || "image/jpeg";
+
+        return new Response(buffer, {
+          status: 200,
           headers: {
-            'Location': data.img,
-            'Content-Type': 'text/html; charset=utf-8',
+            "Content-Type": contentType,
+            "Content-Length": buffer.byteLength.toString(),
+            "Cache-Control": "public, max-age=3600",
           },
         });
       }
+
+      // kalau request biasa, bisa redirect / kasih html
+      return Response.redirect(target, 302);
+      
     } catch (err) {
       console.error('Error in Facebook crawler request:', err);
       return NextResponse.next(); // Continue if there's an error in the fetch request
