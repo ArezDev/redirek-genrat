@@ -40,8 +40,7 @@ export async function middleware(req: NextRequest) {
     if (req.headers.get('user-agent')?.includes('facebookexternalhit') || req.headers.get('user-agent')?.includes('Facebot')) {
     try {
       // Make a POST request to /api/postplay/check to retrieve the image URL based on the shortcode
-      const protocol = req.nextUrl.protocol === 'https:' ? 'https' : 'http';
-      const response = await fetch(`${protocol}://${req.nextUrl.hostname}/api/postplay/check`, {
+      const response = await fetch(`https://generate.balanesohib.eu.org/api/postplay/check`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ shortcode: req.nextUrl.pathname.substring(1) })
