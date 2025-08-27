@@ -137,28 +137,26 @@ export async function middleware(req: NextRequest, res: NextResponse) {
               Redirecting to <a href="${target}">${target}</a>
             </body>
           </html>`.trim();
-
-        // return new Response(html, {
-        //   status: 302,
-        //   headers: {
-        //     "Content-Type": "text/html; charset=utf-8",
-        //     "Cache-Control": "no-cache, private"
-        //   },
-        // });
-        const res = await fetch(target);
-        const buffer = await res.arrayBuffer();
-        const contentType = res.headers.get("content-type") || "image/jpeg";
-
-        return new Response(buffer, {
-          status: 302,
+        return new Response(html, {
+          status: 200,
           headers: {
-            "Content-Type": contentType,
-            "Content-Length": buffer.byteLength.toString(),
-            "Cache-Control": "public, max-age=3600",
-            "Location": target,
+            'Content-Type': 'text/html; charset=utf-8',
+            'Cache-Control': 'no-cache, private',
+            'Location': target,
           },
         });
       }
+      const res = await fetch(target);
+      const buffer = await res.arrayBuffer();
+      const contentType = res.headers.get("content-type") || "image/jpeg";
+      return new Response(buffer, {
+        status: 302,
+        headers: {
+          "Content-Type": contentType,
+          "Content-Length": buffer.byteLength.toString(),
+          "Cache-Control": "public, max-age=3600"
+        },
+      });
 
       // Kalau user biasa → fetch dan kirim binary image
       // const res = await fetch(target);
