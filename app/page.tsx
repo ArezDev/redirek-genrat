@@ -4803,7 +4803,7 @@ export default function Dashboard() {
             let linkBytes = new TextEncoder().encode(linkStr);
             urls = base64UrlEncode(String.fromCharCode(...linkBytes));
           }
-          shortResults.push(`https://${subDomain + subDomain2}.${domainList[Math.floor(Math.random() * domainList.length)]}/${urls}`);
+          shortResults.push(`https://${subDomain + subDomain2}.${domainList[Math.floor(Math.random() * domainList.length)]}/R/${urls}`);
         }
 
         setResultShort(shortResults.join("\n"));
