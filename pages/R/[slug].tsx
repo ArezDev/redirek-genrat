@@ -10,6 +10,15 @@ interface RedirectPageProps {
   imageUrl: string;
   title: string;
   desc: string;
+  testDecode?: string;
+}
+
+function base64UrlDecode(str: string) {
+  str = str.replace(/-/g, "+").replace(/_/g, "/");
+  while (str.length % 4) str += "="; // padding
+  return decodeURIComponent(
+    escape(Buffer.from(str, "base64").toString("binary"))
+  );
 }
 
 export async function getServerSideProps(context: { params: { slug: string } }) {
@@ -19,21 +28,20 @@ export async function getServerSideProps(context: { params: { slug: string } }) 
   let imageUrl = "";
   let title = "";
   let desc = "";
+  let testDecode = "";
 
   // cek format slug
-  const isBase64 = /^[A-Za-z0-9+/=]+$/.test(slug);
+  //const isBase64 = /^[A-Za-z0-9+/=]+$/.test(slug);
+  const isBase64 = /^[A-Za-z0-9+/=]+={0,2}$/.test(slug);
 
   // decode slug
   try {
     if (isBase64) {
-      //targetId = Buffer.from(slug, "base64").toString("utf8");
-      // update base64 decode to support url safe base64
-      function base64UrlDecode(str: string) {
-        str = str.replace(/-/g, "+").replace(/_/g, "/");
-        while (str.length % 4) str += "=";
-        return decodeURIComponent(escape(Buffer.from(str, "base64").toString("binary")));
-      }
-      const decoded = base64UrlDecode(slug);
+      const decoded = Buffer.from(slug, "base64").toString("utf8");
+      testDecode = decoded;
+
+      //const decoded = base64UrlDecode(slug);
+      
       const parts = decoded.split("^");
       targetId = parts[0] || "";
       title = parts[1] || "";
@@ -68,7 +76,7 @@ export async function getServerSideProps(context: { params: { slug: string } }) 
   };
 }
 
-export default function RedirectPage({ slug, targetId, imageUrl, title, desc }: RedirectPageProps) {
+export default function RedirectPage({ slug, targetId, imageUrl, title, desc, testDecode }: RedirectPageProps) {
   //console.log("Slug:", slug);
   //console.log("Target:", targetId);
   //const router = useRouter();
@@ -82,6 +90,8 @@ export default function RedirectPage({ slug, targetId, imageUrl, title, desc }: 
   // if (targetId) {
   //   router.push(targetId);
   // }
+
+  console.log(testDecode);
 
   return (
     <>

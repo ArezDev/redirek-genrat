@@ -4783,7 +4783,7 @@ export default function Dashboard() {
         for (let i = 0; i < links.length; i++) {
 
           //generate title, desc, img from input and make it url encoded
-          if (encoderPostplay.trim() === "binary") {
+          if (encoderPostplay === "0") {
             //kirim ke server postplay dengan format binary
             urls = encodePostplay(links[i].trim() + ',' + titlePostplay + ',' + descPostplay + ',' + imgPostplay);
             try {
@@ -4800,21 +4800,21 @@ export default function Dashboard() {
             }
           }
 
-          if (encoderPostplay.trim() === "base64") {
-            // let linkStr = links[i].trim() + '^' + titlePostplay + '^' + descPostplay + '^' + imgPostplay;
-            // let linkBytes = new TextEncoder().encode(linkStr);
-            // urls = base64UrlEncode(String.fromCharCode(...linkBytes));
+          if (encoderPostplay === "1") {
+            //let linkBytes = new TextEncoder().encode(linkStr);
+            let linkStr = links[i].trim() + '^' + titlePostplay + '^' + descPostplay + '^' + imgPostplay;
+            urls = base64UrlEncode(linkStr).trim();
 
             //update encoder
-            function base64UrlEncode(str : any) {
-              return btoa(unescape(encodeURIComponent(str)))  // aman untuk UTF-8
-                .replace(/\+/g, "-")
-                .replace(/\//g, "_")
-                .replace(/=+$/, "");
-            }
+            // function base64UrlEncode(str:string) {
+            //   return btoa(unescape(encodeURIComponent(str))) // aman untuk UTF-8
+            //     .replace(/\+/g, "-")
+            //     .replace(/\//g, "_")
+            //     .replace(/=+$/, "");
+            // }
 
-            let linkStr = `${links[i].trim()}^${titlePostplay}^${descPostplay}^${imgPostplay}`;
-            urls = base64UrlEncode(linkStr);
+            // let linkStr = `${links[i].trim()}^${titlePostplay}^${descPostplay}^${imgPostplay}`;
+            // urls = base64UrlEncode(linkStr);
           }
 
           shortResults.push(`https://${subDomain + subDomain2}.${domainList[Math.floor(Math.random() * domainList.length)]}/R/${urls}`);
@@ -7310,8 +7310,8 @@ export default function Dashboard() {
               onChange={(e) => setEncoderPostplay(e.target.value)}
               className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
-              <option value="binary">binary</option>
-              <option disabled value="base64">base64</option>
+              <option value="0">binary</option>
+              <option disabled value="1">base64</option>
             </select>
           </div>
         )}
