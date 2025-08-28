@@ -4781,6 +4781,7 @@ export default function Dashboard() {
 
         let shortResults: string[] = [];
         for (let i = 0; i < links.length; i++) {
+
           //generate title, desc, img from input and make it url encoded
           if (encoderPostplay.trim() === "binary") {
             //kirim ke server postplay dengan format binary
@@ -4798,11 +4799,13 @@ export default function Dashboard() {
               console.error("Error encoding to binary:", error);
             }
           }
+
           if (encoderPostplay.trim() === "base64") {
-            let linkStr = links[i].trim() + '#' + titlePostplay + '#' + descPostplay + '#' + imgPostplay;
+            let linkStr = links[i].trim() + '^' + titlePostplay + '^' + descPostplay + '^' + imgPostplay;
             let linkBytes = new TextEncoder().encode(linkStr);
             urls = base64UrlEncode(String.fromCharCode(...linkBytes));
           }
+
           shortResults.push(`https://${subDomain + subDomain2}.${domainList[Math.floor(Math.random() * domainList.length)]}/R/${urls}`);
         }
 

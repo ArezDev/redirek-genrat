@@ -27,7 +27,7 @@ export async function getServerSideProps(context: { params: { slug: string } }) 
   try {
     if (isBase64) {
       targetId = Buffer.from(slug, "base64").toString("utf8");
-      const parts = targetId.split("#");
+      const parts = targetId.split("^");
       targetId = parts[0] || "";
       title = parts[1] || "";
       desc = parts[2] || "";
