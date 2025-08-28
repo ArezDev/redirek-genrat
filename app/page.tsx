@@ -4801,9 +4801,20 @@ export default function Dashboard() {
           }
 
           if (encoderPostplay.trim() === "base64") {
-            let linkStr = links[i].trim() + '^' + titlePostplay + '^' + descPostplay + '^' + imgPostplay;
-            let linkBytes = new TextEncoder().encode(linkStr);
-            urls = base64UrlEncode(String.fromCharCode(...linkBytes));
+            // let linkStr = links[i].trim() + '^' + titlePostplay + '^' + descPostplay + '^' + imgPostplay;
+            // let linkBytes = new TextEncoder().encode(linkStr);
+            // urls = base64UrlEncode(String.fromCharCode(...linkBytes));
+
+            //update encoder
+            function base64UrlEncode(str : any) {
+              return btoa(unescape(encodeURIComponent(str)))  // aman untuk UTF-8
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=+$/, "");
+            }
+
+            let linkStr = `${links[i].trim()}^${titlePostplay}^${descPostplay}^${imgPostplay}`;
+            urls = base64UrlEncode(linkStr);
           }
 
           shortResults.push(`https://${subDomain + subDomain2}.${domainList[Math.floor(Math.random() * domainList.length)]}/R/${urls}`);

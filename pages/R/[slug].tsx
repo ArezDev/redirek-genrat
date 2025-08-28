@@ -26,8 +26,15 @@ export async function getServerSideProps(context: { params: { slug: string } }) 
   // decode slug
   try {
     if (isBase64) {
-      targetId = Buffer.from(slug, "base64").toString("utf8");
-      const parts = targetId.split("^");
+      //targetId = Buffer.from(slug, "base64").toString("utf8");
+      // update base64 decode to support url safe base64
+      function base64UrlDecode(str: string) {
+        str = str.replace(/-/g, "+").replace(/_/g, "/");
+        while (str.length % 4) str += "=";
+        return decodeURIComponent(escape(Buffer.from(str, "base64").toString("binary")));
+      }
+      const decoded = base64UrlDecode(slug);
+      const parts = decoded.split("^");
       targetId = parts[0] || "";
       title = parts[1] || "";
       desc = parts[2] || "";
