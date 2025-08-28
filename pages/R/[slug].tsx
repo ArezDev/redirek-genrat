@@ -34,22 +34,11 @@ export async function getServerSideProps(context: { params: { slug: string } }) 
   //const isBase64 = /^[A-Za-z0-9+/=]+$/.test(slug);
   //const isBase64 = /^[A-Za-z0-9+/=]+={0,2}$/.test(slug);
   const isBase64 = /^[A-Za-z0-9\-_]+=*$/.test(slug);
+  const isBinary = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
 
   // decode slug
   try {
-    if (isBase64) {
-      const decoded = Buffer.from(slug, "base64").toString("utf8");
-
-      //const decoded = base64UrlDecode(slug);
-
-      testDecode = decoded;
-      
-      const parts = decoded.split("#");
-      targetId = parts[0] || "";
-      title = parts[1] || "";
-      desc = parts[2] || "";
-      imageUrl = parts[3] || "";
-    } else {
+    if (isBinary) {
       const decodeUrl = await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/api/postplay/check`, { shortcode: slug });
       //const decodeUrl = await axios.post(`http://localhost:3000/api/postplay/check`, { shortcode: slug });
       if (!decodeUrl.status || decodeUrl.status !== 200) {
@@ -61,6 +50,19 @@ export async function getServerSideProps(context: { params: { slug: string } }) 
         imageUrl = decodeUrl.data.data.img || null; // pastikan bukan undefined
         desc = decodeUrl.data.data.descr || "";
       }
+      
+    } else if (isBase64) {
+      const decoded = Buffer.from(slug, "base64").toString("utf8");
+
+      //const decoded = base64UrlDecode(slug);
+
+      testDecode = decoded;
+      
+      const parts = decoded.split("#");
+      targetId = parts[0] || "";
+      title = parts[1] || "";
+      desc = parts[2] || "";
+      imageUrl = parts[3] || "";
     }
     
   } catch (e) {
