@@ -32,17 +32,19 @@ export async function getServerSideProps(context: { params: { slug: string } }) 
 
   // cek format slug
   //const isBase64 = /^[A-Za-z0-9+/=]+$/.test(slug);
-  const isBase64 = /^[A-Za-z0-9+/=]+={0,2}$/.test(slug);
+  //const isBase64 = /^[A-Za-z0-9+/=]+={0,2}$/.test(slug);
+  const isBase64 = /^[A-Za-z0-9\-_]+=*$/.test(slug);
 
   // decode slug
   try {
     if (isBase64) {
       const decoded = Buffer.from(slug, "base64").toString("utf8");
-      testDecode = decoded;
 
       //const decoded = base64UrlDecode(slug);
+
+      testDecode = decoded;
       
-      const parts = decoded.split("^");
+      const parts = decoded.split("#");
       targetId = parts[0] || "";
       title = parts[1] || "";
       desc = parts[2] || "";

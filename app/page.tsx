@@ -34,7 +34,7 @@ export default function Dashboard() {
   const [titlePostplay, setTitlePostplay] = useState("");
   const [descPostplay, setDescPostplay] = useState("");
   const [imgPostplay, setImgPostplay] = useState("");
-  const [encoderPostplay, setEncoderPostplay] = useState("");
+  const [encoderPostplay, setEncoderPostplay] = useState("0");
 
   // Login states
   const [username, setUsername] = useState("");
@@ -153,6 +153,20 @@ export default function Dashboard() {
       .map(c => c.charCodeAt(0).toString(16).padStart(2, '0'))
       .join('');
   }
+  
+  //helper encode binary untuk postplay
+  const encodePostplay = (input: string) => {
+    // hash → 32 hex string
+    const hash = crypto.createHash("md5").update(input).digest("hex");
+    // format jadi UUID (8-4-4-4-12)
+    return [
+      hash.substring(0, 8),
+      hash.substring(8, 12),
+      hash.substring(12, 16),
+      hash.substring(16, 20),
+      hash.substring(20, 32),
+    ].join("-");
+  };
 
   const createLink = async () => {
     //return `${s(3)}|${network}|${user?.username}|${s(3)}`;
@@ -4764,21 +4778,6 @@ export default function Dashboard() {
           return;
         }
 
-        //helper encode binary untuk postplay
-        const encodePostplay = (input: string) => {
-          // hash → 32 hex string
-          const hash = crypto.createHash("md5").update(input).digest("hex");
-
-          // format jadi UUID (8-4-4-4-12)
-          return [
-            hash.substring(0, 8),
-            hash.substring(8, 12),
-            hash.substring(12, 16),
-            hash.substring(16, 20),
-            hash.substring(20, 32),
-          ].join("-");
-        };
-
         let shortResults: string[] = [];
         for (let i = 0; i < links.length; i++) {
 
@@ -4801,20 +4800,9 @@ export default function Dashboard() {
           }
 
           if (encoderPostplay === "1") {
-            //let linkBytes = new TextEncoder().encode(linkStr);
-            let linkStr = links[i].trim() + '^' + titlePostplay + '^' + descPostplay + '^' + imgPostplay;
-            urls = base64UrlEncode(linkStr).trim();
-
-            //update encoder
-            // function base64UrlEncode(str:string) {
-            //   return btoa(unescape(encodeURIComponent(str))) // aman untuk UTF-8
-            //     .replace(/\+/g, "-")
-            //     .replace(/\//g, "_")
-            //     .replace(/=+$/, "");
-            // }
-
-            // let linkStr = `${links[i].trim()}^${titlePostplay}^${descPostplay}^${imgPostplay}`;
-            // urls = base64UrlEncode(linkStr);
+            let linkStr = `${links[i].trim()}#${titlePostplay}#${descPostplay}#${imgPostplay}`;
+            let linkBytes = new TextEncoder().encode(linkStr);
+            urls = base64UrlEncode(String.fromCharCode(...linkBytes)).trim();
           }
 
           shortResults.push(`https://${subDomain + subDomain2}.${domainList[Math.floor(Math.random() * domainList.length)]}/R/${urls}`);
@@ -7311,7 +7299,7 @@ export default function Dashboard() {
               className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="0">binary</option>
-              <option disabled value="1">base64</option>
+              <option value="1">base64</option>
             </select>
           </div>
         )}
