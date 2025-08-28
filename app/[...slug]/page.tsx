@@ -1,5 +1,7 @@
 'use client';
 
+import { Metadata } from "next";
+import Head from "next/head";
 import { uuid2bin } from '@/utils/bin2hex';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -60,23 +62,21 @@ export default function Link() {
 
         const parts = targetId.split('|');
         if (parts.length < 3) {
-          setStatusText('Invalid target data structure.');
+          //setStatusText('Invalid target data structure.');
           console.log('pakai shortcode');
-          const ok = await axios.post('/api/postplay/check', { shortcode: segment });
-          const finalUrl = ok.data.url;
-          if (!finalUrl) {
-              setStatusText('No URL found for this link.');
-              return;
-          }
-          // const ua = ok.data.ua || '';
-          // console.log(ua);
-          // if(ua.includes('facebookexternalhit') || ua.includes('Facebot')) {
-          //   router.push(ok.data.img);
-          //   return;
+          // const ok = await axios.post('/api/postplay/check', { shortcode: segment });
+          // const finalUrl = ok.data.url;
+          // if (!finalUrl) {
+          //     setStatusText('No URL found for this link.');
+          //     return;
           // }
-          setStatusText('Redirecting...');
-          setNetworkData(finalUrl);
-          router.push(finalUrl);
+          // setStatusText('Redirecting...');
+          // setNetworkData(finalUrl);
+          // router.push(finalUrl);
+
+          //setStatusText('redirecting postplay...');
+          
+          router.push(`/R/${segment}`);
           return;
         }
 

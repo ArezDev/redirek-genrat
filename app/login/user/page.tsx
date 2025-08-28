@@ -56,6 +56,7 @@ export default function LoginPage() {
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Login Member</h2>
         {error && <p className="text-red-600 mb-3">{error}</p>}
         <input
+          autoComplete="username"
           type="text"
           placeholder="Username"
           value={username}
@@ -63,6 +64,7 @@ export default function LoginPage() {
           className="w-full mb-3 p-2 rounded bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
         />
         <input
+          autoComplete="current-password"
           type="password"
           placeholder="Password"
           value={password}

@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '@/utils/db';
+import { title } from 'process';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
@@ -10,12 +11,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     //get data dari Server
-    const [result]: any = await db.execute('SELECT url, img FROM postplay_redirect WHERE shortcode = ?', [shortcode]);
+    const [result]: any = await db.execute('SELECT * FROM postplay_redirect WHERE shortcode = ?', [shortcode]);
 
     if (result[0].url) {
         //tes simpan ua
-        await db.execute('UPDATE postplay_redirect SET hits = hits + 1, useragent = ? WHERE shortcode = ?', [req.headers['user-agent'], shortcode]);
-        res.status(200).json({ status: 'ok', url: result[0].url, img: result[0].img, ua: req.headers['user-agent'] });
+        await db.execute(`UPDATE postplay_redirect 
+          SET hits = hits + 1, 
+          useragent = ?
+          WHERE shortcode = ?`
+          , [req.headers['user-agent'], shortcode]);
+        // res.status(200).json({ 
+        //   status: 'ok', 
+        //   url: result[0].url,
+        //   title: result[0].title,
+        //   desc: result[0].descr,
+        //   img: result[0].img,
+        //   ua: req.headers['user-agent'] 
+        // });
+        res.status(200).json({ 
+          status: 'ok', 
+          data: result[0]
+        });
     }
 
   } catch (error: any) {
